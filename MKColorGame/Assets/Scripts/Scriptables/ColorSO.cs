@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewColor", menuName = "StroopTest/Color")]
-public class ColorSO : BasicScriptable
+public class ColorSO : ScriptableObject
 {
     [Header("Information")]
     [SerializeField] private string _name;

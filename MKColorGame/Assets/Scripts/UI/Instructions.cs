@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Following is to move on to the game after the player pressed start after reading the instructions
+/// </summary>
 public class Instructions : MonoBehaviour
 {
     [Header("Button")]
@@ -12,15 +15,12 @@ public class Instructions : MonoBehaviour
     [SerializeField] private Canvas _instructions;
     [SerializeField] private Canvas _playCanvas;
 
-    private void Awake()
-    {
-        _startButton.GetComponent<Button>().onClick.AddListener(() => startPressed());
-    }
+    // Add function on click to start button
+    private void Awake() =>  _startButton.GetComponent<Button>().onClick.AddListener(() => startPressed());
 
+    // following disables the instruction canvass, and enable the games canvas
     private void startPressed()
     {
-        Debug.Log("Start Pressed");
-
         _instructions.enabled = false;
         _playCanvas.enabled = true;
     }

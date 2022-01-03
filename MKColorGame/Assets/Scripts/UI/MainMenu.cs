@@ -16,16 +16,16 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private Canvas _mainMenu;
     [SerializeField] private Canvas _instructions;
 
+    // Add function on click to Play Button & Quit Button
     private void Awake()
     {
         _playButton.GetComponent<Button>().onClick.AddListener(() => playPressed());
         _quitButton.GetComponent<Button>().onClick.AddListener(() => quitGame());
     }
 
+    // following starts the game and enables the instruction panel
     private void playPressed()
     {
-        Debug.Log("Play Pressed");
-
         _mainMenu.enabled = false;
         _instructions.enabled = true;
     }
