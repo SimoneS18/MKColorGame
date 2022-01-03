@@ -12,8 +12,8 @@ public class Instructions : MonoBehaviour
     [SerializeField] private GameObject _startButton;
 
     [Header("Canvas's")]
-    [SerializeField] private Canvas _instructions;
-    [SerializeField] private Canvas _playCanvas;
+    [SerializeField] private GameObject _instructions;
+    [SerializeField] private GameObject _playCanvas;
 
     // Add function on click to start button
     private void Awake() =>  _startButton.GetComponent<Button>().onClick.AddListener(() => startPressed());
@@ -21,7 +21,7 @@ public class Instructions : MonoBehaviour
     // following disables the instruction canvass, and enable the games canvas
     private void startPressed()
     {
-        _instructions.enabled = false;
-        _playCanvas.enabled = true;
+        _instructions.SetActive(false);
+        _playCanvas.SetActive(true);
     }
 }

@@ -13,8 +13,8 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject _quitButton;
 
     [Header("Canvas's")]
-    [SerializeField] private Canvas _mainMenu;
-    [SerializeField] private Canvas _instructions;
+    [SerializeField] private GameObject _mainMenu;
+    [SerializeField] private GameObject _instructions;
 
     // Add function on click to Play Button & Quit Button
     private void Awake()
@@ -26,8 +26,8 @@ public class MainMenu : MonoBehaviour
     // following starts the game and enables the instruction panel
     private void playPressed()
     {
-        _mainMenu.enabled = false;
-        _instructions.enabled = true;
+        _mainMenu.SetActive(false);
+        _instructions.SetActive(true);
     }
 
     private void quitGame()
