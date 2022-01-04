@@ -5,8 +5,9 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Following is to move on to the game after the player pressed start after reading the instructions
+/// This wasn't needed but gave a quick summary to the player on how to play if they have never need it before
 /// </summary>
-public class Instructions : MonoBehaviour
+public class InstructionsUI : MonoBehaviour
 {
     [Header("Button")]
     [SerializeField] private GameObject _startButton;

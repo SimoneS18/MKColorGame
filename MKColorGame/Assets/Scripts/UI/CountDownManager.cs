@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Following Script controls the appearance of the countdown and the countdown controller
+/// </summary>
 public class CountDownManager : MonoBehaviour
 {
     [SerializeField] private int _count; 
@@ -14,14 +16,11 @@ public class CountDownManager : MonoBehaviour
     public static Action RestartTimer;
     public static Action StopTimer;
     public int points;
-    private int maxCount;
 
     private void Start()
     {
         RestartTimer += Restart;
         StopTimer += Stop;
-
-        maxCount = _count;
 
         // following starts the countdown as soon as the game object is started
         StartCoroutine(CountDownToStart());
@@ -33,18 +32,21 @@ public class CountDownManager : MonoBehaviour
         StopTimer -= Stop;
     }
 
-    // sets up the countdown
+    // sets up the countdown and have it count down ever 1 second
     IEnumerator CountDownToStart()
     {
+        // loop until _count is not 0
         while (_count >= 0)
         {
             _countDown.text = _count.ToString();
 
+            // set up points
             _pointsAdded.text = $"+{_count * 10}";
             points = _count * 10;
 
             yield return new WaitForSeconds(1f);
 
+            // determines if count has reached 0 or not
             if (_count != 0)
                 _count--;
             if (_count == 0)
@@ -53,6 +55,7 @@ public class CountDownManager : MonoBehaviour
 
     }
 
+    // following sets up and starts the countdown
     private void Restart()
     {
         _count = 10;
@@ -61,5 +64,6 @@ public class CountDownManager : MonoBehaviour
         StartCoroutine(CountDownToStart());
     }
 
+    // following stops the countdown
     private void Stop() => StopAllCoroutines();
 }

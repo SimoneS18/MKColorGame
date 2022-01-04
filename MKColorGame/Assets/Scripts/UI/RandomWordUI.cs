@@ -6,7 +6,7 @@ using UnityEngine;
 /// following is just for visual purposes
 /// When the GameObject is first load, pick a random color and then another random color
 /// </summary>
-public class RandomWord : MonoBehaviour
+public class RandomWordUI : MonoBehaviour
 {
     [Header("Appearance")]
     [SerializeField] private GameObject _text;

@@ -1,10 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Following script is the manager of the game.
+/// It controls the game set up from the colors, to the display and restarting
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     [Header("Setup")]
@@ -30,8 +33,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _finishGameCanvas;
 
     private ColorSO correctColor;
+
     public static Action<ColorSO> OnButtonPressed;
     public static Action TimerCountedDown;
+    public static Action Restart;
 
     private int points;
     private int count;
@@ -49,9 +54,12 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        // following are linked to the actions and what happens when they are invoked
         OnButtonPressed += CheckIfCorrectAnswer;
         TimerCountedDown += NextQuestion;
+        Restart += RestartGame;
 
+        // start the game at the starting point
         RestartGame();
     }
 
@@ -59,6 +67,7 @@ public class GameManager : MonoBehaviour
     {
         OnButtonPressed -= CheckIfCorrectAnswer;
         TimerCountedDown -= NextQuestion;
+        Restart -= RestartGame;
     }
 
     // following function sets up the correct color
@@ -91,7 +100,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             int random = UnityEngine.Random.Range(0, _tempColors.Count);
-            _colorButtons[i].GetComponent<ColorButton>().Init(_tempColors[random]);
+            _colorButtons[i].GetComponent<ColorButtonUI>().Init(_tempColors[random]);
 
             _tempColors.RemoveAt(random);
         }
@@ -99,27 +108,31 @@ public class GameManager : MonoBehaviour
 
     private void NextWord()
     {
+        // display the points and current count
         _points.text = $"{points}";
         _count.text = $"{count}/{_numberOfRandomWords}";
 
+        // set the time
         time = Time.time;
 
         // following determines if its the end of the game
         if (count != _numberOfRandomWords)
         {
+            // set up the main and color buttons
             SetupCorrectColor();
             SetupColorButtons();
 
+            // reset countdown timer
             CountDownManager.RestartTimer?.Invoke();
         }
         else
         {
+            // stop countdown timer
             CountDownManager.StopTimer?.Invoke();
 
+            // enable game screen
             _finishGameCanvas.SetActive(true);
-
             _finishGameCanvas.GetComponent<FinishGameUI>().Init(points, times, answers);
-
             _gameCanvas.SetActive(false);
         }
     }
@@ -127,13 +140,13 @@ public class GameManager : MonoBehaviour
     // following checks to see if the pressed button is the correct button
     private void CheckIfCorrectAnswer(ColorSO colorSO)
     {
+        // spawn in result from question text
         GameObject resultText = Instantiate(_resultText, _resultSpawnPoint);
 
         float finishTime = Time.time - time;
-
         times.Add(finishTime);
         
-
+        // see if the answer correct or incorrect
         if (colorSO == correctColor)
         {
             answers.Add(true);
@@ -144,6 +157,7 @@ public class GameManager : MonoBehaviour
 
             count++;
 
+            // start next word
             NextWord();
         }
         else
@@ -152,10 +166,13 @@ public class GameManager : MonoBehaviour
             resultText.GetComponent<ResultUI>().Init(false, finishTime);
 
             count++;
+
+            // start next word
             NextWord();
         }
     }
 
+    // following sets up next question if the player doesn't press a color in 10 seconds
     private void NextQuestion()
     {
         GameObject resultText = Instantiate(_resultText, _resultSpawnPoint);
@@ -163,7 +180,7 @@ public class GameManager : MonoBehaviour
 
         points = points - 50;
 
-        float finishTime = (float)Math.Round(Time.time - time, 3);
+        float finishTime = Time.time - time;
 
         times.Add(finishTime);
         answers.Add(false);
@@ -175,6 +192,9 @@ public class GameManager : MonoBehaviour
     // following is called at the start/restart of a game
     private void RestartGame()
     {
+        times.Clear();
+        answers.Clear();
+
         // set points to 0 are game start/restart & display
         points = 0;
         _points.text = $"{points}";

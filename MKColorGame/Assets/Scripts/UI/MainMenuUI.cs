@@ -1,16 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
 /// Set up the starting of the game
 /// </summary>
-public class MainMenu : MonoBehaviour
+public class MainMenuUI : MonoBehaviour
 {
     [Header("Main Menu Buttons")]
     [SerializeField] private GameObject _playButton;
     [SerializeField] private GameObject _quitButton;
+
+    [Header("Appearance")]
+    [SerializeField] private TMP_Text _highScore;
+    [SerializeField] private TMP_Text _average;
 
     [Header("Canvas's")]
     [SerializeField] private GameObject _mainMenu;
@@ -21,6 +26,12 @@ public class MainMenu : MonoBehaviour
     {
         _playButton.GetComponent<Button>().onClick.AddListener(() => playPressed());
         _quitButton.GetComponent<Button>().onClick.AddListener(() => quitGame());
+
+        int highScore = PlayerPrefs.GetInt("HighScore");
+        _highScore.text = $"<b>High Score: </b>{highScore}";
+
+        float average = PlayerPrefs.GetFloat("Average");
+        _average.text = $"<b>Best Average: </b> {average}";
     }
 
     // following starts the game and enables the instruction panel
@@ -30,8 +41,6 @@ public class MainMenu : MonoBehaviour
         _instructions.SetActive(true);
     }
 
-    private void quitGame()
-    {
-        Debug.Log("Quit");
-    }
+    // following quits the game when quit button pressed
+    private void quitGame() => Application.Quit();
 }

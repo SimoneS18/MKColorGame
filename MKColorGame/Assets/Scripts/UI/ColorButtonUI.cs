@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Following Sets up the color buttons to display ingame
+/// </summary>
 [RequireComponent(typeof(Button))]
-public class ColorButton : MonoBehaviour
+public class ColorButtonUI : MonoBehaviour
 {
     [Header("Appearance")]
     [SerializeField] private Image _background;
@@ -13,6 +14,7 @@ public class ColorButton : MonoBehaviour
 
     private ColorSO _colorSO;
 
+    // takes in the assigned ColorSO
     internal void Init(ColorSO colorSO)
     {
         _colorSO = colorSO;
@@ -31,5 +33,6 @@ public class ColorButton : MonoBehaviour
         _text.color = _colorSO.Color;
     }
 
+    // tell ths Game manager if this button was pressed and what color it is
     private void OnButtonClicked() => GameManager.OnButtonPressed?.Invoke(_colorSO);
 }
