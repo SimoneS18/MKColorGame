@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Setup")]
     [SerializeField] private List<GameObject> _colorButtons;
+    [SerializeField] private Button _restartButton;
     [SerializeField] private TMP_Text _mainColor;
     [SerializeField] private TMP_Text _points;
     [SerializeField] private TMP_Text _count;
@@ -19,6 +21,13 @@ public class GameManager : MonoBehaviour
     [Header("Countdown")]
     [SerializeField] private CountDownManager _countDownManager;
 
+    [Header("Prefabs")]
+    [SerializeField] private GameObject _resultText;
+    [SerializeField] private Transform _resultSpawnPoint;
+
+    [Header("Canvas's")]
+    [SerializeField] private GameObject _gameCanvas;
+    [SerializeField] private GameObject _finishGameCanvas;
 
     private ColorSO correctColor;
     public static Action<ColorSO> OnButtonPressed;
@@ -26,23 +35,24 @@ public class GameManager : MonoBehaviour
 
     private int points;
     private int count;
+    private float time;
+
+    private List<float> times =new List<float>();
+    private List<bool> answers = new List<bool>();
 
     void Start()
     {
-        SetupCorrectColor();
-        SetupColorButtons();
-
-        points = 0;
-        _points.text = $"{points}";
-
-        count = 0;
-        _count.text = $"{count}/{_numberOfRandomWords}";
+        // Set up restart Game Button
+        _restartButton.onClick.RemoveAllListeners();
+        _restartButton.onClick.AddListener(() => RestartGame());
     }
 
     private void Awake()
     {
         OnButtonPressed += CheckIfCorrectAnswer;
         TimerCountedDown += NextQuestion;
+
+        RestartGame();
     }
 
     private void OnDestroy()
@@ -92,6 +102,9 @@ public class GameManager : MonoBehaviour
         _points.text = $"{points}";
         _count.text = $"{count}/{_numberOfRandomWords}";
 
+        time = Time.time;
+
+        // following determines if its the end of the game
         if (count != _numberOfRandomWords)
         {
             SetupCorrectColor();
@@ -101,16 +114,31 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("FINSH!");
             CountDownManager.StopTimer?.Invoke();
+
+            _finishGameCanvas.SetActive(true);
+
+            _finishGameCanvas.GetComponent<FinishGameUI>().Init(points, times, answers);
+
+            _gameCanvas.SetActive(false);
         }
     }
 
     // following checks to see if the pressed button is the correct button
     private void CheckIfCorrectAnswer(ColorSO colorSO)
     {
+        GameObject resultText = Instantiate(_resultText, _resultSpawnPoint);
+
+        float finishTime = Time.time - time;
+
+        times.Add(finishTime);
+        
+
         if (colorSO == correctColor)
         {
+            answers.Add(true);
+            resultText.GetComponent<ResultUI>().Init(true, finishTime);
+
             int point = _countDownManager.points;
             points = points + point;
 
@@ -120,17 +148,49 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            answers.Add(false);
+            resultText.GetComponent<ResultUI>().Init(false, finishTime);
+
             count++;
             NextWord();
         }
-            
     }
 
     private void NextQuestion()
     {
+        GameObject resultText = Instantiate(_resultText, _resultSpawnPoint);
+        resultText.GetComponent<ResultUI>().Init();
+
         points = points - 50;
+
+        float finishTime = (float)Math.Round(Time.time - time, 3);
+
+        times.Add(finishTime);
+        answers.Add(false);
 
         count++;
         NextWord();
+    }
+
+    // following is called at the start/restart of a game
+    private void RestartGame()
+    {
+        // set points to 0 are game start/restart & display
+        points = 0;
+        _points.text = $"{points}";
+
+        // set count to 0 are game start/restart
+        count = 0;
+        _count.text = $"{count}/{_numberOfRandomWords}";
+
+        // restart timer
+        CountDownManager.RestartTimer?.Invoke();
+
+        // sets up the Main color and the color buttons as the Start of the Game
+        SetupCorrectColor();
+        SetupColorButtons();
+
+        // set the starting time to determine how long it takes for the player to play
+        time = Time.time;
     }
 }
